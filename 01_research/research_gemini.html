@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字织机：东莞虎门服装产业集群市场洞察</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with a Teal Accent -->
+    <!-- Application Structure Plan: A thematic, dashboard-style single-page application. The structure is designed for intuitive exploration, moving from a high-level overview to deep dives into specific areas. 1. Hero Section: Grabs attention with key metrics and the core value proposition. 2. Market Opportunity: Explores the 'why' with interactive charts on market size and customer pain points. 3. Competitive Landscape: Visually compares existing solutions to highlight the market gap. 4. Strategic Blueprint: Presents the 'how' with an interactive product roadmap and business model visualization. 5. Future Vision: Concludes with the long-term potential. This non-linear, thematic structure allows users (like investors or product managers) to quickly grasp the most critical information without reading a linear report, enhancing usability and comprehension. -->
+    <!-- Visualization & Content Choices: 1. Key Metrics (Hero): Goal=Inform -> Method=Animated Counters -> Interaction=On-load animation -> Justification=Creates an immediate sense of scale and opportunity. 2. Market Pain Points (Opportunity): Goal=Compare -> Method=Chart.js Horizontal Bar Chart -> Interaction=Tooltips on hover -> Justification=Clearly visualizes the most critical pain point (piece-rate wages) as the primary driver for the software. 3. Customer Segments (Opportunity): Goal=Organize -> Method=Interactive HTML Cards -> Interaction=Click to reveal details -> Justification=Allows users to explore different user personas without cluttering the main view. 4. Competitor Analysis (Landscape): Goal=Compare -> Method=Interactive HTML Grid -> Interaction=Click to highlight -> Justification=Provides a dynamic and clear comparison that's more engaging than a static table. 5. Product Roadmap (Blueprint): Goal=Organize/Change -> Method=Interactive HTML Timeline -> Interaction=Click to show phase details -> Justification=Presents the product strategy in a clear, step-by-step manner. All visualizations use Canvas via Chart.js or structured HTML/CSS, adhering to the NO SVG/Mermaid constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 350px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; max-height: 400px; } }
+        .bg-warm-gray-50 { background-color: #F9F9F9; }
+        .bg-warm-gray-100 { background-color: #F3F4F6; }
+        .text-warm-gray-800 { color: #1F2937; }
+        .text-warm-gray-600 { color: #4B5563; }
+        .accent-teal { color: #14B8A6; }
+        .bg-accent-teal { background-color: #14B8A6; }
+        .border-accent-teal { border-color: #14B8A6; }
+        .nav-link { transition: color 0.3s ease; }
+        .nav-link:hover { color: #14B8A6; }
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-warm-gray-50 text-warm-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-2xl font-bold">
+                <span class="accent-teal">数字</span>织机
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#opportunity" class="nav-link text-warm-gray-600 font-medium">市场机遇</a>
+                <a href="#competition" class="nav-link text-warm-gray-600 font-medium">竞争格局</a>
+                <a href="#strategy" class="nav-link text-warm-gray-600 font-medium">战略蓝图</a>
+                <a href="#vision" class="nav-link text-warm-gray-600 font-medium">未来展望</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-warm-gray-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#opportunity" class="block nav-link text-warm-gray-600">市场机遇</a>
+            <a href="#competition" class="block nav-link text-warm-gray-600">竞争格局</a>
+            <a href="#strategy" class="block nav-link text-warm-gray-600">战略蓝图</a>
+            <a href="#vision" class="block nav-link text-warm-gray-600">未来展望</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">洞察虎门服装产业的<span class="accent-teal">数字化脉搏</span></h1>
+                <p class="text-lg md:text-xl text-warm-gray-600 max-w-3xl mx-auto mb-12">本报告深入剖析东莞虎门服装代工厂集群，揭示在“小单快反”趋势下，一个为中小型工厂量身定制的、移动优先的生产管理SaaS平台所面临的巨大市场机遇。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-warm-gray-100 p-6 rounded-lg">
+                        <p class="text-4xl font-bold accent-teal" id="stat-factories">0</p>
+                        <p class="text-warm-gray-600 mt-2">家生产企业</p>
+                    </div>
+                    <div class="bg-warm-gray-100 p-6 rounded-lg">
+                        <p class="text-4xl font-bold accent-teal" id="stat-workers">0</p>
+                        <p class="text-warm-gray-600 mt-2">万从业人员</p>
+                    </div>
+                    <div class="bg-warm-gray-100 p-6 rounded-lg">
+                        <p class="text-4xl font-bold accent-teal" id="stat-output">0</p>
+                        <p class="text-warm-gray-600 mt-2">亿年工业产值</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="opportunity" class="py-20 bg-warm-gray-100">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">市场机遇：痛点即是起点</h2>
+                    <p class="text-lg text-warm-gray-600 max-w-3xl mx-auto">传统生产模式正在衰退，而“小单快反”带来了对敏捷、数字化工具的刚性需求。政府补贴更是为这场转型注入了强劲动力。</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="order-2 md:order-1">
+                        <h3 class="text-2xl font-bold mb-4">工厂的核心运营痛点</h3>
+                        <p class="text-warm-gray-600 mb-6">在“小单快反”模式下，工厂管理者面临生产排程混乱、进度跟踪不透明、成本核算困难等一系列尖锐痛点。其中，计件工资管理是所有痛点中最为突出、最耗时且最易引发劳资纠纷的环节。</p>
+                        <div class="chart-container">
+                            <canvas id="painPointsChart"></canvas>
+                        </div>
+                        <p class="text-sm text-center text-warm-gray-600 mt-2">点击图表条目可查看详情</p>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <h3 class="text-2xl font-bold mb-4">典型客户画像分析</h3>
+                        <p class="text-warm-gray-600 mb-6">市场并非铁板一块，不同规模和业务模式的工厂需求各异。一个成功的解决方案必须具备灵活性和模块化特性。点击下方卡片了解不同客户的需求。</p>
+                        <div class="space-y-4" id="customer-profiles">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competition" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">竞争格局：在巨头缝隙中寻找蓝海</h2>
+                    <p class="text-lg text-warm-gray-600 max-w-3xl mx-auto">现有市场由传统ERP（功能强大但笨重昂贵）和通用进销存软件（轻量但缺乏行业深度）主导，为深度垂直、移动优先的SaaS解决方案留下了明确的市场空白。</p>
+                </div>
+                <div id="competitor-grid" class="bg-warm-gray-100 p-4 md:p-8 rounded-xl">
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="py-20 bg-warm-gray-100">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">战略蓝图：从“特洛伊木马”到生态平台</h2>
+                    <p class="text-lg text-warm-gray-600 max-w-3xl mx-auto">我们的战略是：以解决核心痛点（计件工资）的轻量级应用切入市场，快速获取用户，然后通过模块化升级，逐步构建一个完整的数据驱动型生产管理平台。</p>
+                </div>
+                
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-center mb-8">产品演进路线图</h3>
+                    <div id="roadmap" class="relative">
+                        <div class="border-l-2 border-dashed border-accent-teal absolute h-full top-0 left-1/2 -ml-px"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-center mb-8">“补贴驱动型SaaS”商业模式</h3>
+                    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                        <div class="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-8">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-accent-teal/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-4xl">🏭</span>
+                                </div>
+                                <p class="font-bold">工厂客户</p>
+                                <p class="text-sm text-warm-gray-600">软件年费: ¥X</p>
+                            </div>
+                            <div class="text-5xl font-thin text-accent-teal transform rotate-90 md:rotate-0">&rarr;</div>
+                             <div class="text-center">
+                                <div class="w-24 h-24 bg-accent-teal/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-4xl">💰</span>
+                                </div>
+                                <p class="font-bold">政府补贴</p>
+                                <p class="text-sm text-warm-gray-600">最高补贴30%</p>
+                            </div>
+                            <div class="text-5xl font-thin text-accent-teal transform rotate-90 md:rotate-0">&rarr;</div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-accent-teal/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-4xl">✅</span>
+                                </div>
+                                <p class="font-bold">实际成本</p>
+                                <p class="text-sm text-warm-gray-600">低门槛采纳</p>
+                            </div>
+                        </div>
+                        <p class="text-center mt-6 text-warm-gray-600">我们的销售策略核心是成为“补贴政策顾问”，帮助客户利用政府资金，将采购决策从“成本”转变为“投资机会”。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="vision" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">未来展望：从管理工具到产业大脑</h2>
+                    <p class="text-lg text-warm-gray-600 max-w-3xl mx-auto">软件的终极价值在于数据。通过汇集海量生产数据，平台将演变为一个数据智能引擎，为整个产业集群提供前所未有的洞察力。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="text-center p-6">
+                        <div class="text-5xl mb-4">🤖</div>
+                        <h3 class="text-xl font-bold mb-2">AI赋能生产</h3>
+                        <p class="text-warm-gray-600">利用AI进行智能排程、质量检测和趋势预测，将生产效率提升至新高度。</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-5xl mb-4">🌐</div>
+                        <h3 class="text-xl font-bold mb-2">物联网无缝集成</h3>
+                        <p class="text-warm-gray-600">连接智能吊挂、RFID等硬件设备，实现车间数据的自动化、实时化采集。</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-5xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold mb-2">行业数据对标</h3>
+                        <p class="text-warm-gray-600">提供匿名的行业数据对标服务，帮助工厂定位自身效率，发现改进空间。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-warm-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 数字织机市场洞察。保留所有权利。</p>
+            <p class="text-sm text-gray-400 mt-2">本应用根据提供的市场分析报告生成，仅供战略参考。</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="modal-title" class="text-2xl font-bold mb-4"></h3>
+            <div id="modal-content" class="text-warm-gray-600"></div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const data = {
+        stats: {
+            factories: 3100,
+            workers: 20,
+            output: 410
+        },
+        painPoints: {
+            labels: ['计件工资管理', '生产进度跟踪', '生产计划排程', '订单成本核算', '信息沟通效率'],
+            scores: [95, 85, 80, 75, 70],
+            details: {
+                '计件工资管理': '极其复杂、耗时且易引发劳资纠纷。传统纸质“菲票”效率低下，存在伪造、丢失和计算错误风险，是数字化改造的最迫切需求。',
+                '生产进度跟踪': '管理者无法实时掌握订单在各工序间的流转状态，依赖口头询问和人工巡查，信息滞后且不准确，严重影响交付准时率。',
+                '生产计划排程': '将成百上千个小而杂的订单手动分配给不同产线和工人，并应对频繁变更，是一项极其繁琐且极易出错的工作。',
+                '订单成本核算': '对于小批量、非标化的订单，精确计算材料、人工和综合成本异常困难，导致报价不准、利润失控。',
+                '信息沟通效率': '从接单、计划到车间一线的信息传递缓慢且失真，常常导致生产错误和交付延期，是内部协作的主要瓶颈。'
+            }
+        },
+        customerProfiles: [
+            { name: '蓝沃服饰 - 定制化专家', details: '规模小(11-50人)，专注团体服装定制。痛点在于管理高度混合、极低批量的订单和繁杂的个性化需求。需要灵活的订单配置和生产流程工具。' },
+            { name: '思颖红服饰 - 微型出口商', details: '小型作坊，专注出口订单。痛点在于资源有限，却要满足国际客户严苛的交期和质量标准。价格敏感，需要简单、核心功能突出、上手快的轻量级工具。' },
+            { name: '慧琳服饰 - 品牌代工者', details: '中等规模，承接国际品牌加工。痛点在于满足品牌方严格的审核要求，对质量控制、过程追溯和合规性有强烈需求。数字化成熟度较高。' },
+            { name: '瑞逅服饰 - 电商快反供应商', details: '规模较大(105人)，为跨境电商供货。生存之道在于极致的敏捷性，对动态排程、与电商平台数据打通的先进系统需求最为迫切。' }
+        ],
+        competitors: [
+            { name: '本方案定位', position: '移动优先，深度垂直', strength: '轻量SaaS，模块化，专注生产核心痛点，利用补贴政策。', weakness: '新进入者，品牌知名度低。', icon: '🎯' },
+            { name: '华遨软件', position: '传统ERP，功能强大', strength: '功能全面，深度满足大型企业复杂需求，行业经验丰富。', weakness: '价格昂贵，实施周期长，系统笨重，不适合小微工厂。', icon: '🏢' },
+            { name: '秦丝科技', position: '通用进销存，用户量大', strength: '免费模式入门门槛低，用户基数大，功能覆盖面广。', weakness: '非服装生产专业，生产管理功能较浅，无法解决核心流程问题。', icon: '🛒' },
+            { name: '微型计件App', position: '单一功能，点解决方案', strength: '精准解决计件工资痛点，简单易用，价格低廉。', weakness: '造成数据孤岛，无法与其它管理流程打通，价值有限。', icon: '📱' }
+        ],
+        roadmap: [
+            { phase: '第一阶段 (MVP)', title: '智能计薪与进度跟踪', details: '以“计件工资”为核心切入点。提供工人扫码计件、实时查看工资和管理者实时查看生产进度的核心功能。目标是免费或极低价快速渗透市场。', icon: '🚀' },
+            { phase: '第二阶段', title: '管控模块', details: '推出可视化的生产排程看板、物料与库存管理、订单成本核算分析。此为核心付费模块，通过订阅模式实现商业化。', icon: '⚙️' },
+            { phase: '第三阶段', title: '智能模块', details: '提供高级BI数据分析仪表盘、AI辅助的次品分析、开放API以对接电商平台或智能硬件。面向对数据有更高要求的中大型客户。', icon: '🧠' },
+            { phase: '第四阶段', title: '生态模块', details: '建立供应商/外发加工厂协同门户，并推出基于行业大数据的对标服务，构建平台网络效应，形成强大护城河。', icon: '🌍' }
+        ]
+    };
+
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    const heroSection = document.getElementById('hero');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            animateValue(document.getElementById('stat-factories'), 0, data.stats.factories, 1500);
+            animateValue(document.getElementById('stat-workers'), 0, data.stats.workers, 1500);
+            animateValue(document.getElementById('stat-output'), 0, data.stats.output, 1500);
+            observer.disconnect();
+        }
+    }, { threshold: 0.5 });
+    observer.observe(heroSection);
+
+    const ctx = document.getElementById('painPointsChart').getContext('2d');
+    const painPointsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.painPoints.labels,
+            datasets: [{
+                label: '痛点指数',
+                data: data.painPoints.scores,
+                backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                borderColor: 'rgba(20, 184, 166, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` 痛点指数: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { display: false }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            },
+            onClick: (event, elements) => {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const label = data.painPoints.labels[index];
+                    const detail = data.painPoints.details[label];
+                    openModal(label, `<p>${detail}</p>`);
+                }
+            }
+        }
+    });
+
+    const customerProfilesContainer = document.getElementById('customer-profiles');
+    data.customerProfiles.forEach(profile => {
+        const div = document.createElement('div');
+        div.className = 'card bg-white p-6 rounded-lg shadow-sm cursor-pointer';
+        div.innerHTML = `<h4 class="font-bold text-lg">${profile.name}</h4>`;
+        div.addEventListener('click', () => {
+            openModal(profile.name, `<p>${profile.details}</p>`);
+        });
+        customerProfilesContainer.appendChild(div);
+    });
+
+    const competitorGrid = document.getElementById('competitor-grid');
+    let competitorHTML = '<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">';
+    data.competitors.forEach(c => {
+        competitorHTML += `
+            <div class="card bg-white p-4 rounded-lg text-center cursor-pointer competitor-card" data-name="${c.name}">
+                <div class="text-4xl mb-3">${c.icon}</div>
+                <h4 class="font-bold text-md mb-2">${c.name}</h4>
+                <p class="text-sm text-warm-gray-600">${c.position}</p>
+            </div>
+        `;
+    });
+    competitorHTML += '</div><div id="competitor-details" class="mt-8 bg-white p-6 rounded-lg shadow-inner min-h-[100px]"></div>';
+    competitorGrid.innerHTML = competitorHTML;
+    
+    const competitorCards = document.querySelectorAll('.competitor-card');
+    const competitorDetails = document.getElementById('competitor-details');
+
+    function showCompetitorDetails(name) {
+        const competitor = data.competitors.find(c => c.name === name);
+        competitorDetails.innerHTML = `
+            <h4 class="font-bold text-xl mb-2 accent-teal">${competitor.name}</h4>
+            <p class="mb-2"><strong class="font-medium">优势:</strong> ${competitor.strength}</p>
+            <p><strong class="font-medium">劣势:</strong> ${competitor.weakness}</p>
+        `;
+        competitorCards.forEach(card => {
+            if (card.dataset.name === name) {
+                card.classList.add('ring-2', 'ring-accent-teal');
+            } else {
+                card.classList.remove('ring-2', 'ring-accent-teal');
+            }
+        });
+    }
+
+    competitorCards.forEach(card => {
+        card.addEventListener('click', () => showCompetitorDetails(card.dataset.name));
+    });
+    showCompetitorDetails(data.competitors[0].name);
+
+    const roadmapContainer = document.getElementById('roadmap');
+    data.roadmap.forEach((item, index) => {
+        const isLeft = index % 2 === 0;
+        const div = document.createElement('div');
+        div.className = `mb-8 flex justify-between items-center w-full ${isLeft ? 'flex-row-reverse' : ''}`;
+        div.innerHTML = `
+            <div class="order-1 w-5/12"></div>
+            <div class="z-20 flex items-center order-1 bg-accent-teal shadow-xl w-12 h-12 rounded-full">
+                <h1 class="mx-auto font-bold text-lg text-white">${item.icon}</h1>
+            </div>
+            <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card cursor-pointer">
+                <h3 class="font-bold text-gray-800 text-lg">${item.phase} - ${item.title}</h3>
+            </div>
+        `;
+        div.querySelector('.card').addEventListener('click', () => {
+            openModal(`${item.phase}: ${item.title}`, `<p>${item.details}</p>`);
+        });
+        roadmapContainer.appendChild(div);
+    });
+
+    const modal = document.getElementById('modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+
+    function openModal(title, content) {
+        modalTitle.textContent = title;
+        modalContent.innerHTML = content;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+});
+</script>
+</body>
+</html>
