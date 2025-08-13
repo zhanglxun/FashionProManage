@@ -8,7 +8,7 @@
 ## 1. 项目目的
 本工程用于托管产品规划与需求设计的所有产物 —— 包括竞品资料、用户画像、流程图、业务规则、以及 AI 生成的数据库结构 SQL 脚本等。  
 **AI 是协作者**：在 Cursor 中运行 prompt，AI 会把产出写回本工程对应目录，形成可持续迭代的知识库与规范集。  
-本项目 **不直接输出生产代码**（代码将在独立工程中实现）；本工程的输出将为编码提供详尽的需求、数据设计与业务规则。
+本项目 **不直接输出生产代码**（代码将在独立工程中实现），本工程的输出将为编码提供详尽的需求、数据设计与业务规则。
 
 
 ## 2. 项目的目录结构
@@ -16,8 +16,8 @@
 
 ```
 /FashionProManage/
-├─ README.md
-├─ /00_meta/
+├─ README.md            项目初始化文件
+├─ /00_meta/            #元数据配置
 │ ├─ project_info.md    #项目背景、目标、范围
 │ ├─ changelog.md       #迭代日志（Append-only）
 │ ├─ cursor_config.md   #Cursor AI persona / system-prompt 配置
@@ -26,36 +26,36 @@
 │ ├─ market_research.md
 │ ├─ user_interviews/   #原始访谈记录（文本或音频链接）
 │ │ ├─ interview_YYYYMMDD.md
-├─ /02_personas/
-│ ├─ personas.md
-│ ├─ persona_<id>.json
-├─ /03_journeys_and_flows/
-│ ├─ user_journeys.md
+├─ /02_personas/        # 用户画像
+│ ├─ personas.md        # 用户画像资料
+│ ├─ persona_<id>.json  # 用户画像结构化数据
+├─ /03_journeys_and_flows/  #用户体验和工作流
+│ ├─ user_journeys.md   # 工作体验地图
 │ ├─ flow_<name>.svg
-├─ /04_requirements/
+├─ /04_requirements/    #需求管理
 │ ├─ req_index.md       # 列表 + 状态
 │ ├─ req_<short-title>_vX__YYYYMMDD.md      #每个需求单独文档
-├─ /05_data_model/
+├─ /05_data_model/      #数据模型
 │ ├─ data_dictionary.md
 │ ├─ erd/               # 图与导出
 │ ├─ sql/               # SQL 数据库脚本
 │ │ ├─ schema_v1__YYYYMMDD.sql
 │ │ ├─ migrations/
-├─ /06_business_rules/
+├─ /06_business_rules/  # 业务规则
 │ ├─ rules.md           # 业务规则文档
 │ ├─ rule<id>.md        # 每个规则单独文档
-├─ /07_templates/       # 模板
+├─ /07_templates/       # 模板管理
 │ ├─ prompt_templates.md    
 │ ├─ requirement_template.md #需求模板
 │ ├─ persona_template.md
-├─ /08_outputs/
+├─ /08_outputs/         #输出管理
 │ ├─ meeting_notes/
 │ ├─ decisions/
-│ ├─ prototypes_links.md
-├─ /09_tests_acceptance/
+│ ├─ prototypes_links.md  
+├─ /09_tests_acceptance/# 验收准则模板
 │ ├─ acceptance_criteria.md
 │ ├─ test_cases/
-├─ /10_archive/
+├─ /10_archive/         # 档案管理
 │ ├─ old_versions/
 ```
 
