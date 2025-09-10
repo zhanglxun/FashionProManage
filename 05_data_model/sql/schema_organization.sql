@@ -76,7 +76,7 @@ CREATE TABLE `c_enterprise_supplier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='供应商扩展信息表';
 
 -- 工厂扩展信息表
-CREATE TABLE `c_enterprise_factory` (
+CREATE TABLE `` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID',
   `factory_area` decimal(10,2) DEFAULT NULL COMMENT '工厂面积(平方米)',
