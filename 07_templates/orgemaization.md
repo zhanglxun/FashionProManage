@@ -1,14 +1,15 @@
-表名：o_enterprise_supplier
+表名：o_supplier_product
 
 
 
 
-用途：平台供应商的扩展信息表
+用途：平台供应商\工厂的的产品、服务信息表，能管理到各客户自己的价格，这样选择的时候，价格可自己带过去，基础信息维护
 
 
 
 
-原始表：f_supplier
+原始表：f_supplier_product
+
 
 
 
@@ -18,92 +19,55 @@
 索引/键
 备注
 id
-Long
+bigint 20
 
 PK
 主键ID
-enterprise_id
-bigint
+supplier_id
+bigint 20
 
 o_enterprise的主键ID
-主表企业的主键的ID
-supplier_type
-int
+供应商的主键的ID
+basic_fabric_id
+bigint 20
+
+p_basic_fabric的主键
+物料档案的ID
+product_name
+varchar 255
 
 
-字典定义
-供应商类型：
-1-面料供应商 
-2-辅料供应商 
-3-消耗品供应商 
-4-服务供应商 
-5-综合供应商
-production_capacity
-Varchar 64
+品名
+fabric_type_name
+varchar 50
 
 
-产能描述
-min_order_quantity
-int
+布种类别
+maaterials
+varchar 100
 
 
-最小订单数量
-lead_time_days
-int
+布封/用料
+unit
+varchar 10
 
 
-标准交期(天)
-quality_rating
-decimal(3,2)
+单位（取字典）
+unit_price
+decimal 10 2
 
 
-质量评分(0-5)
-delivery_rating
-decimal(3,2)
+供应商单价
+amount
+decimal 10 2
 
 
-交期评分(0-5)
-service_rating
-decimal(3,2)
+用量
+description
+Varchar 255
 
 
-服务评分(0-5)
-level
-tinyint
-
-
-按金额等级：
-1-A -采购金额 >30
-2-B-11<采购金额<29
-3-C-5<采购金额 <10
-4-D-采购金额 <4
-cooperation_level
-tinyint 
-
-
-
-合作等级：
-1-战略合作 
-2-重要合作 
-3-一般合作 
-4-临时合作
-payment_method
-tinyint
-
-
-付款方式
-1-现金支付
-2-月结支付
-payment_terms
-varchar(200)
-
-
-付款条件
-cooperation_start_date
-datetime
-
-
-合作开始日期
+备注描述
 create_time
 datetime
 

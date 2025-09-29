@@ -274,3 +274,55 @@ CREATE TABLE `o_enterprise_supplier` (
   KEY `idx_payment_method` (`payment_method`),
   CONSTRAINT `fk_enterprise_supplier_enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台供应商扩展信息表';
+
+-- 平台工厂扩展信息表
+CREATE TABLE `o_enterprise_factory` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
+  `fatory_type` varchar(64) DEFAULT NULL COMMENT '专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽',
+  `production_capacity` varchar(64) DEFAULT NULL COMMENT '产能描述',
+  `min_order_quantity` int DEFAULT NULL COMMENT '最小订单数量',
+  `lead_time_days` int DEFAULT NULL COMMENT '标准交期(天)',
+  `quality_rating` decimal(3,2) DEFAULT NULL COMMENT '质量评分(0-5)',
+  `delivery_rating` decimal(3,2) DEFAULT NULL COMMENT '交期评分(0-5)',
+  `service_rating` decimal(3,2) DEFAULT NULL COMMENT '服务评分(0-5)',
+  `level` int DEFAULT NULL COMMENT '按金额等级，字典配置：1-A(>30万),2-B(11-29万),3-C(5-10万),4-D(<4万)',
+  `cooperation_level` int DEFAULT NULL COMMENT '合作等级：1-战略合作,2-重要合作,3-一般合作,4-临时合作',
+  `payment_method` int DEFAULT NULL COMMENT '付款方式: 1-现金支付,2-月结支付',
+  `payment_terms` varchar(200) DEFAULT NULL COMMENT '付款条件',
+  `cooperation_start_date` datetime DEFAULT NULL COMMENT '合作开始日期',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
+  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_enterprise_id` (`enterprise_id`),
+  KEY `idx_fatory_type` (`fatory_type`),
+  KEY `idx_level` (`level`),
+  KEY `idx_cooperation_level` (`cooperation_level`),
+  KEY `idx_payment_method` (`payment_method`),
+  CONSTRAINT `fk_factory_enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台工厂扩展信息表';
+
+-- 平台供应商/工厂的产品、服务表
+CREATE TABLE `o_supplier_product` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `supplier_id` bigint NOT NULL COMMENT '供应商ID，关联o_enterprise主键',
+  `basic_fabric_id` bigint DEFAULT NULL COMMENT '物料档案的ID，关联p_basic_fabric主键',
+  `product_name` varchar(255) DEFAULT NULL COMMENT '品名',
+  `fabric_type_name` varchar(50) DEFAULT NULL COMMENT '布种类别',
+  `maaterials` varchar(100) DEFAULT NULL COMMENT '布封/用料',
+  `unit` varchar(10) DEFAULT NULL COMMENT '单位（取字典）',
+  `unit_price` decimal(10,2) DEFAULT NULL COMMENT '供应商单价',
+  `amount` decimal(10,2) DEFAULT NULL COMMENT '用量',
+  `description` varchar(255) DEFAULT NULL COMMENT '备注描述',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
+  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_supplier_id` (`supplier_id`),
+  KEY `idx_basic_fabric_id` (`basic_fabric_id`),
+  KEY `idx_product_name` (`product_name`),
+  CONSTRAINT `fk_supplier_product_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台供应商/工厂的产品、服务信息表';
