@@ -279,7 +279,7 @@ CREATE TABLE `o_enterprise_supplier` (
 CREATE TABLE `o_enterprise_factory` (
   `id` bigint NOT NULL COMMENT '主键ID',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
-  `fatory_type` varchar(64) DEFAULT NULL COMMENT '专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽',
+  `factory_type` varchar(64) DEFAULT NULL COMMENT '专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽',
   `production_capacity` varchar(64) DEFAULT NULL COMMENT '产能描述',
   `min_order_quantity` int DEFAULT NULL COMMENT '最小订单数量',
   `lead_time_days` int DEFAULT NULL COMMENT '标准交期(天)',
@@ -311,7 +311,7 @@ CREATE TABLE `o_supplier_product` (
   `basic_fabric_id` bigint DEFAULT NULL COMMENT '物料档案的ID，关联p_basic_fabric主键',
   `product_name` varchar(255) DEFAULT NULL COMMENT '品名',
   `fabric_type_name` varchar(50) DEFAULT NULL COMMENT '布种类别',
-  `maaterials` varchar(100) DEFAULT NULL COMMENT '布封/用料',
+  `materials` varchar(100) DEFAULT NULL COMMENT '布封/用料',
   `unit` varchar(10) DEFAULT NULL COMMENT '单位（取字典）',
   `unit_price` decimal(10,2) DEFAULT NULL COMMENT '供应商单价',
   `amount` decimal(10,2) DEFAULT NULL COMMENT '用量',
