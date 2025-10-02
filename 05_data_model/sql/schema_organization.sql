@@ -108,12 +108,12 @@ CREATE TABLE `o_area` (
   KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地域信息表';
 
--- 企业关系表（精简优化版）
--- 【优化说明】：简化字段设计，保留核心功能，支持后续扩展，避免过度设计
+-- 企业关系表（最终优化版）
+-- 【设计说明】：支持企业间任意关系，from_enterprise_id为关系创建者，支持双向关系查询
 CREATE TABLE `o_enterprise_relation` (
   `id` bigint NOT NULL COMMENT '主键ID',
-  `from_enterprise_id` bigint NOT NULL COMMENT '主体企业ID，关系发起方，关联o_enterprise主键',
-  `to_enterprise_id` bigint NOT NULL COMMENT '客体企业ID，关系接收方，关联o_enterprise主键',
+  `from_enterprise_id` bigint NOT NULL COMMENT '关系发起企业ID，关联o_enterprise主键',
+  `to_enterprise_id` bigint NOT NULL COMMENT '关系接收企业ID，关联o_enterprise主键',
   `relation_type` int NOT NULL COMMENT '关系类型：1-代理关系，2-供应关系，3-客户关系，4-合作关系，5-上下级关系，6-投资关系，7-竞争关系，8-其他关系',
   `business_type` int DEFAULT NULL COMMENT '业务类型：1-智能织机，2-面辅料供应，3-成衣生产，4-外贸出口，5-内贸分销，6-其他业务',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '关系状态：1-正常，2-暂停，3-终止，4-待确认',
@@ -123,6 +123,7 @@ CREATE TABLE `o_enterprise_relation` (
   `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
   PRIMARY KEY (`id`),
+  KEY `idx_relation_bidirectional` (`from_enterprise_id`, `to_enterprise_id`, `status`) COMMENT '双向关系查询优化索引',
   KEY `idx_from_enterprise_id` (`from_enterprise_id`),
   KEY `idx_to_enterprise_id` (`to_enterprise_id`),
   KEY `idx_relation_type` (`relation_type`),
@@ -130,14 +131,7 @@ CREATE TABLE `o_enterprise_relation` (
   KEY `idx_status` (`status`),
   CONSTRAINT `fk_enterprise_relation_from` FOREIGN KEY (`from_enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_enterprise_relation_to` FOREIGN KEY (`to_enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业关系表（精简版，支持核心关系管理，预留扩展接口）';
-
--- 【扩展接口说明】后续可根据业务需要添加以下字段：
--- ALTER TABLE `o_enterprise_relation` ADD COLUMN `start_date` datetime DEFAULT NULL COMMENT '关系开始时间';
--- ALTER TABLE `o_enterprise_relation` ADD COLUMN `end_date` datetime DEFAULT NULL COMMENT '关系结束时间';
--- ALTER TABLE `o_enterprise_relation` ADD COLUMN `priority_level` tinyint DEFAULT 3 COMMENT '优先级：1-高，2-中，3-低';
--- ALTER TABLE `o_enterprise_relation` ADD COLUMN `relation_strength` decimal(3,2) DEFAULT 5.00 COMMENT '关系强度(0-10)';
--- ALTER TABLE `o_enterprise_relation` ADD COLUMN `contract_amount` decimal(15,2) DEFAULT NULL COMMENT '合同金额';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业关系表（支持任意企业间关系管理）';
 
 -- 企业参数定义表
 CREATE TABLE `o_setting` (
