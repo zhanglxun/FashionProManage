@@ -1,9 +1,7 @@
 -- 组织架构相关表结构
 -- 基于实际业务需求设计
 
--- 企业信息表（合并优化版）
--- 【优化说明】：将供应商表(o_enterprise_supplier)和工厂表(o_enterprise_factory)字段合并到主表，
--- 消除85%字段冗余，通过type字段和新增字段区分业务类型，表结构统一简洁
+-- 企业信息表
 CREATE TABLE `o_enterprise` (
   `id` bigint NOT NULL COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
@@ -15,7 +13,7 @@ CREATE TABLE `o_enterprise` (
   `name` varchar(64) NOT NULL COMMENT '企业名称',
   `short_name` varchar(32) DEFAULT NULL COMMENT '企业简称',
   `domain_name` varchar(128) DEFAULT NULL COMMENT '企业域名、官网地址',
-  `type` int DEFAULT NULL COMMENT '企业客户类别：1-平台客户，2-代理商/经销商，3-供应商，4-代工厂，5-综合供应商(工厂+供应商)',
+  `type` int DEFAULT NULL COMMENT '企业客户类别：1-平台客户，2-代理商/经销商，3-供应商，4-代工厂',
   `source` int DEFAULT NULL COMMENT '客户渠道来源：1-自然注册，2-客户转介绍，3-客户录入',
   `scale` varchar(24) DEFAULT NULL COMMENT '人员规模，字典配置',
   `legal_person` varchar(50) DEFAULT NULL COMMENT '企业法人',
@@ -30,23 +28,6 @@ CREATE TABLE `o_enterprise` (
   `status` int NOT NULL DEFAULT '1' COMMENT '状态：1-启用，0-禁用',
   `verification_status` int DEFAULT '0' COMMENT '认证状态：0-未认证，1-已认证，2-认证失败',
   `description` varchar(128) DEFAULT NULL COMMENT '描述和备注',
-
-  -- 供应商/工厂扩展字段（原o_enterprise_supplier和o_enterprise_factory表字段合并）
-  `supplier_type` int DEFAULT NULL COMMENT '供应商类型（供应商用）：1-面料供应商，2-辅料供应商，3-消耗品供应商，4-服务供应商，5-综合供应商',
-  `factory_type` varchar(64) DEFAULT NULL COMMENT '专长工艺（工厂用），字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽',
-  
-  `production_capacity` varchar(64) DEFAULT NULL COMMENT '产能描述（供应商/工厂用）',
-  `min_order_quantity` int DEFAULT NULL COMMENT '最小订单数量（供应商/工厂用）',
-  `lead_time_days` int DEFAULT NULL COMMENT '标准交期天（供应商/工厂用）',
-  `quality_rating` decimal(3,2) DEFAULT NULL COMMENT '质量评分0-5（供应商/工厂用）',
-  `delivery_rating` decimal(3,2) DEFAULT NULL COMMENT '交期评分0-5（供应商/工厂用）',
-  `service_rating` decimal(3,2) DEFAULT NULL COMMENT '服务评分0-5（供应商/工厂用）',
-  `business_level` tinyint DEFAULT NULL COMMENT '业务等级（供应商/工厂用）：1-A(>30万)，2-B(11-29万)，3-C(5-10万)，4-D(<4万)',
-  `cooperation_level` tinyint DEFAULT NULL COMMENT '合作等级（供应商/工厂用）：1-战略合作，2-重要合作，3-一般合作，4-临时合作',
-  `payment_method` tinyint DEFAULT NULL COMMENT '付款方式（供应商/工厂用）：1-现金支付，2-月结支付',
-  `payment_terms` varchar(200) DEFAULT NULL COMMENT '付款条件（供应商/工厂用）',
-  `cooperation_start_date` datetime DEFAULT NULL COMMENT '合作开始日期（供应商/工厂用）',
-
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
   `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -57,13 +38,8 @@ CREATE TABLE `o_enterprise` (
   KEY `idx_code` (`code`),
   KEY `idx_name` (`name`),
   KEY `idx_type` (`type`),
-  KEY `idx_status` (`status`),
-  KEY `idx_supplier_type` (`supplier_type`),
-  KEY `idx_factory_type` (`factory_type`),
-  KEY `idx_business_level` (`business_level`),
-  KEY `idx_cooperation_level` (`cooperation_level`),
-  KEY `idx_payment_method` (`payment_method`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台企业信息表（已合并供应商和工厂扩展字段）';
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台企业客户信息表';
 
 -- 企业代理商扩展信息表
 CREATE TABLE `o_enterprise_agent` (
@@ -108,30 +84,26 @@ CREATE TABLE `o_area` (
   KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地域信息表';
 
--- 企业关系表（最终优化版）
--- 【设计说明】：支持企业间任意关系，from_enterprise_id为关系创建者，支持双向关系查询
+-- 机构关系表（代理商和企业的关系表）
 CREATE TABLE `o_enterprise_relation` (
   `id` bigint NOT NULL COMMENT '主键ID',
-  `from_enterprise_id` bigint NOT NULL COMMENT '关系发起企业ID，关联o_enterprise主键',
-  `to_enterprise_id` bigint NOT NULL COMMENT '关系接收企业ID，关联o_enterprise主键',
-  `relation_type` int NOT NULL COMMENT '关系类型：1-代理关系，2-供应关系，3-客户关系，4-合作关系，5-上下级关系，6-投资关系，7-竞争关系，8-其他关系',
-  `business_type` int DEFAULT NULL COMMENT '业务类型：1-智能织机，2-面辅料供应，3-成衣生产，4-外贸出口，5-内贸分销，6-其他业务',
-  `status` tinyint NOT NULL DEFAULT '1' COMMENT '关系状态：1-正常，2-暂停，3-终止，4-待确认',
-  `description` varchar(512) DEFAULT NULL COMMENT '关系描述和备注信息',
+  `agent_id` bigint DEFAULT NULL COMMENT '代理商ID，关联o_enterprise主键，类型为代理商',
+  `enterprise_id` bigint DEFAULT NULL COMMENT '企业ID，关联o_enterprise主键，类型为企业',
+  `type` int DEFAULT NULL COMMENT '管理映射：1-企业客户，2-代理商，3-供应商，4-工厂',
+  `business_type` int DEFAULT NULL COMMENT '业务类型：1-智能织机（服饰生产管理系统），2-其他业务',
+  `description` varchar(256) DEFAULT NULL COMMENT '描述和备注信息',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
   `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
   PRIMARY KEY (`id`),
-  KEY `idx_relation_bidirectional` (`from_enterprise_id`, `to_enterprise_id`, `status`) COMMENT '双向关系查询优化索引',
-  KEY `idx_from_enterprise_id` (`from_enterprise_id`),
-  KEY `idx_to_enterprise_id` (`to_enterprise_id`),
-  KEY `idx_relation_type` (`relation_type`),
+  KEY `idx_agent_id` (`agent_id`),
+  KEY `idx_enterprise_id` (`enterprise_id`),
+  KEY `idx_type` (`type`),
   KEY `idx_business_type` (`business_type`),
-  KEY `idx_status` (`status`),
-  CONSTRAINT `fk_enterprise_relation_from` FOREIGN KEY (`from_enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_enterprise_relation_to` FOREIGN KEY (`to_enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业关系表（支持任意企业间关系管理）';
+  CONSTRAINT `fk_enterprise_relation_agent` FOREIGN KEY (`agent_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_enterprise_relation_enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='机构关系表，代理商和企业的关系表';
 
 -- 企业参数定义表
 CREATE TABLE `o_setting` (
@@ -274,18 +246,72 @@ CREATE TABLE `o_contact` (
   CONSTRAINT `fk_contact_customer` FOREIGN KEY (`customer_id`) REFERENCES `o_customer` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户联系人信息表';
 
--- 【已删除】o_enterprise_ext表
--- 原供应商表和工厂表字段已合并到主表o_enterprise中，无需额外扩展表
+-- 平台供应商扩展信息表
+CREATE TABLE `o_enterprise_supplier` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
+  `supplier_type` int DEFAULT NULL COMMENT '供应商类型：1-面料供应商，2-辅料供应商，3-消耗品供应商，4-服务供应商，5-综合供应商',
+  `production_capacity` varchar(64) DEFAULT NULL COMMENT '产能描述',
+  `min_order_quantity` int DEFAULT NULL COMMENT '最小订单数量',
+  `lead_time_days` int DEFAULT NULL COMMENT '标准交期(天)',
+  `quality_rating` decimal(3,2) DEFAULT NULL COMMENT '质量评分(0-5)',
+  `delivery_rating` decimal(3,2) DEFAULT NULL COMMENT '交期评分(0-5)',
+  `service_rating` decimal(3,2) DEFAULT NULL COMMENT '服务评分(0-5)',
+  `level` tinyint DEFAULT NULL COMMENT '按金额等级：1-A(>30万)，2-B(11-29万)，3-C(5-10万)，4-D(<4万)',
+  `cooperation_level` tinyint DEFAULT NULL COMMENT '合作等级：1-战略合作，2-重要合作，3-一般合作，4-临时合作',
+  `payment_method` tinyint DEFAULT NULL COMMENT '付款方式：1-现金支付，2-月结支付',
+  `payment_terms` varchar(200) DEFAULT NULL COMMENT '付款条件',
+  `cooperation_start_date` datetime DEFAULT NULL COMMENT '合作开始日期',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
+  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_enterprise_id` (`enterprise_id`),
+  KEY `idx_supplier_type` (`supplier_type`),
+  KEY `idx_level` (`level`),
+  KEY `idx_cooperation_level` (`cooperation_level`),
+  KEY `idx_payment_method` (`payment_method`),
+  CONSTRAINT `fk_enterprise_supplier_enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台供应商扩展信息表';
+
+-- 平台工厂扩展信息表
+CREATE TABLE `o_enterprise_factory` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
+  `fatory_type` varchar(64) DEFAULT NULL COMMENT '专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽',
+  `production_capacity` varchar(64) DEFAULT NULL COMMENT '产能描述',
+  `min_order_quantity` int DEFAULT NULL COMMENT '最小订单数量',
+  `lead_time_days` int DEFAULT NULL COMMENT '标准交期(天)',
+  `quality_rating` decimal(3,2) DEFAULT NULL COMMENT '质量评分(0-5)',
+  `delivery_rating` decimal(3,2) DEFAULT NULL COMMENT '交期评分(0-5)',
+  `service_rating` decimal(3,2) DEFAULT NULL COMMENT '服务评分(0-5)',
+  `level` int DEFAULT NULL COMMENT '按金额等级，字典配置：1-A(>30万),2-B(11-29万),3-C(5-10万),4-D(<4万)',
+  `cooperation_level` int DEFAULT NULL COMMENT '合作等级：1-战略合作,2-重要合作,3-一般合作,4-临时合作',
+  `payment_method` int DEFAULT NULL COMMENT '付款方式: 1-现金支付,2-月结支付',
+  `payment_terms` varchar(200) DEFAULT NULL COMMENT '付款条件',
+  `cooperation_start_date` datetime DEFAULT NULL COMMENT '合作开始日期',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_id` bigint DEFAULT NULL COMMENT '创建人ID',
+  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `modify_id` bigint DEFAULT NULL COMMENT '修改人ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_enterprise_id` (`enterprise_id`),
+  KEY `idx_fatory_type` (`fatory_type`),
+  KEY `idx_level` (`level`),
+  KEY `idx_cooperation_level` (`cooperation_level`),
+  KEY `idx_payment_method` (`payment_method`),
+  CONSTRAINT `fk_factory_enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台工厂扩展信息表';
 
 -- 平台供应商/工厂的产品、服务表
--- 【优化说明】：表名和字段保持不变，兼容原有业务逻辑
 CREATE TABLE `o_supplier_product` (
   `id` bigint NOT NULL COMMENT '主键ID',
-  `supplier_id` bigint NOT NULL COMMENT '供应商/工厂ID，关联o_enterprise主键（支持合并后的o_enterprise_vendor表）',
+  `supplier_id` bigint NOT NULL COMMENT '供应商ID，关联o_enterprise主键',
   `basic_fabric_id` bigint DEFAULT NULL COMMENT '物料档案的ID，关联p_basic_fabric主键',
   `product_name` varchar(255) DEFAULT NULL COMMENT '品名',
   `fabric_type_name` varchar(50) DEFAULT NULL COMMENT '布种类别',
-  `materials` varchar(100) DEFAULT NULL COMMENT '布封/用料',
+  `maaterials` varchar(100) DEFAULT NULL COMMENT '布封/用料',
   `unit` varchar(10) DEFAULT NULL COMMENT '单位（取字典）',
   `unit_price` decimal(10,2) DEFAULT NULL COMMENT '供应商单价',
   `amount` decimal(10,2) DEFAULT NULL COMMENT '用量',
@@ -299,4 +325,4 @@ CREATE TABLE `o_supplier_product` (
   KEY `idx_basic_fabric_id` (`basic_fabric_id`),
   KEY `idx_product_name` (`product_name`),
   CONSTRAINT `fk_supplier_product_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `o_enterprise` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台供应商/工厂的产品、服务信息表（兼容合并后的vendor模式）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台供应商/工厂的产品、服务信息表';

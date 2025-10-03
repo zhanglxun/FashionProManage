@@ -108,33 +108,42 @@ o_enterprise_relation 关系表可高效支撑企业间“父子/合作/供货/�
 | cooperation_start_date | datetime | 合作开始日期         |
 | ...（见schema）
 
-### o_enterprise_supplier（供应商扩展表）
+### o_enterprise（企业主表 - 合并后）
 | 字段名            | 类型         | 说明                      |
 |------------------|------------|--------------------------|
 | id               | bigint     | 主键ID                   |
-| enterprise_id    | bigint     | 关联o_enterprise主键      |
+| name             | varchar(64)| 企业名称                 |
+| type             | int        | 企业类型(包含新增值5-综合供应商) |
+| ...（基础字段见schema）  |            |                          |
+| **扩展字段**      |            | **原供应商/工厂合并字段**  |
 | supplier_type    | int        | 供应商类型                |
+| factory_type     | varchar(64)| 专长工艺                  |
 | production_capacity | varchar(64)| 产能描述                |
+| min_order_quantity | int       | 最小订单数量              |
+| lead_time_days   | int        | 标准交期(天)             |
 | quality_rating   | decimal(3,2)| 质量评分                  |
-| ...（见schema）
+| delivery_rating  | decimal(3,2)| 交期评分                  |
+| service_rating   | decimal(3,2)| 服务评分                  |
+| business_level   | tinyint    | 业务等级                  |
+| cooperation_level| tinyint    | 合作等级                  |
+| payment_method   | tinyint    | 付款方式                  |
+| payment_terms    | varchar(200)| 付款条件                 |
+| cooperation_start_date | datetime | 合作开始日期          |
 
-### o_enterprise_factory（工厂扩展表）
-| 字段名            | 类型         | 说明                     |
-|------------------|------------|--------------------------|
-| id               | bigint     | 主键ID                   |
-| enterprise_id    | bigint     | 关联o_enterprise主键      |
-| fatory_type      | varchar(64)| 专长工艺，字典配置        |
-| production_capacity | varchar(64)| 产能描述                |
-| quality_rating   | decimal(3,2)| 质量评分                  |
-| ...（见schema）
+**合并说明**: 原o_enterprise_supplier和o_enterprise_factory表已合并到主表，消除85%字段冗余。
 
-### o_enterprise_relation（企业关系表）
-| 字段名         | 类型         | 说明                    |
-|---------------|------------|------------------------|
-| id            | bigint     | 主键ID                 |
-| parent_id     | bigint     | 父级ID/上层机构         |
-| enterprise_id | bigint     | 关联企业主键            |
-| type          | int        | 关系类型（供货/代理等）   |
-| ...（见schema）
+### o_enterprise_relation（企业关系表 - 优化后）
+| 字段名            | 类型         | 说明                    |
+|------------------|------------|------------------------|
+| id               | bigint     | 主键ID                 |
+| from_enterprise_id| bigint     | 主体企业ID             |
+| to_enterprise_id  | bigint     | 客体企业ID             |
+| relation_type     | tinyint    | 关系类型(8种)          |
+| business_type     | int        | 业务类型               |
+| status           | tinyint    | 关系状态               |
+| description      | varchar(256)| 描述                  |
+| ...（见schema）   |            |                        |
+
+**优化说明**: 字段语义更清晰，支持任意企业间关系，新增状态管理。
 
 > 详细字段、索引、外键与注释以 `schema_organization.sql` 为最终标准，详见实际SQL及业务字典。

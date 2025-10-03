@@ -320,7 +320,7 @@
 | name | varchar(64) | 企业名称 |
 | short_name | varchar(32) | 企业简称 |
 | domain_name | varchar(128) | 企业域名、官网地址 |
-| type | int | 企业客户类别：1-平台客户，2-代理商/经销商，3-供应商，4-代工厂 |
+| type | int | 企业客户类别：1-平台客户，2-代理商/经销商，3-供应商，4-代工厂，5-综合供应商(工厂+供应商) |
 | source | int | 客户渠道来源：1-自然注册，2-客户转介绍，3-客户录入 |
 | scale | varchar(24) | 人员规模，字典配置 |
 | legal_person | varchar(50) | 企业法人 |
@@ -335,6 +335,20 @@
 | status | int | 状态：1-启用，0-禁用 |
 | verification_status | int | 认证状态：0-未认证，1-已认证，2-认证失败 |
 | description | varchar(128) | 描述和备注 |
+| **扩展字段** | | **原供应商/工厂合并字段** |
+| supplier_type | int | 供应商类型：1-面料供应商，2-辅料供应商，3-消耗品供应商，4-服务供应商，5-综合供应商 |
+| factory_type | varchar(64) | 专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽 |
+| production_capacity | varchar(64) | 产能描述 |
+| min_order_quantity | int | 最小订单数量 |
+| lead_time_days | int | 标准交期(天) |
+| quality_rating | decimal(3,2) | 质量评分(0-5) |
+| delivery_rating | decimal(3,2) | 交期评分(0-5) |
+| service_rating | decimal(3,2) | 服务评分(0-5) |
+| business_level | tinyint | 按金额等级：1-A(>30万)，2-B(11-29万)，3-C(5-10万)，4-D(<4万) |
+| cooperation_level | tinyint | 合作等级：1-战略合作，2-重要合作，3-一般合作，4-临时合作 |
+| payment_method | tinyint | 付款方式：1-现金支付，2-月结支付 |
+| payment_terms | varchar(200) | 付款条件 |
+| cooperation_start_date | datetime | 合作开始日期 |
 | create_time | datetime | 创建时间 |
 | create_id | bigint | 创建人ID |
 | modify_time | datetime | 修改时间 |
@@ -360,51 +374,28 @@
 | modify_time | datetime | 修改时间 |
 | modify_id | bigint | 修改人ID |
 
-### 2.1.3.企业供应商扩展信息表（o_enterprise_supplier）
+### 2.1.3.企业扩展字段说明
 
+**合并说明**: 原供应商扩展表(o_enterprise_supplier)和工厂扩展表(o_enterprise_factory)已合并到主表o_enterprise中，消除85%字段冗余。
+
+**新增字段**:
 | 字段名 | 类型 | 备注说明 |
 | ------ | ---- | -------- |
-| id | bigint | 主键ID |
-| enterprise_id | bigint | 企业ID，关联o_enterprise主键 |
 | supplier_type | int | 供应商类型：1-面料供应商，2-辅料供应商，3-消耗品供应商，4-服务供应商，5-综合供应商 |
+| factory_type | varchar(64) | 专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽 |
 | production_capacity | varchar(64) | 产能描述 |
 | min_order_quantity | int | 最小订单数量 |
 | lead_time_days | int | 标准交期(天) |
 | quality_rating | decimal(3,2) | 质量评分(0-5) |
 | delivery_rating | decimal(3,2) | 交期评分(0-5) |
 | service_rating | decimal(3,2) | 服务评分(0-5) |
-| level | tinyint | 按金额等级：1-A(>30万)，2-B(11-29万)，3-C(5-10万)，4-D(<4万) |
+| business_level | tinyint | 按金额等级：1-A(>30万)，2-B(11-29万)，3-C(5-10万)，4-D(<4万) |
 | cooperation_level | tinyint | 合作等级：1-战略合作，2-重要合作，3-一般合作，4-临时合作 |
 | payment_method | tinyint | 付款方式：1-现金支付，2-月结支付 |
 | payment_terms | varchar(200) | 付款条件 |
 | cooperation_start_date | datetime | 合作开始日期 |
-| create_time | datetime | 创建时间 |
-| create_id | bigint | 创建人ID |
-| modify_time | datetime | 修改时间 |
-| modify_id | bigint | 修改人ID |
 
-### 2.1.4.平台工厂扩展信息表（o_enterprise_factory）
-
-| 字段名 | 类型 | 备注说明 |
-| ------ | ---- | -------- |
-| id | bigint | 主键ID |
-| enterprise_id | bigint | 企业ID，关联o_enterprise主键 |
-| fatory_type | varchar(64) | 专长工艺，字典配置，支持多选：1-加工,2-印花,3-绣花,4-打揽 |
-| production_capacity | varchar(64) | 产能描述 |
-| min_order_quantity | int | 最小订单数量 |
-| lead_time_days | int | 标准交期(天) |
-| quality_rating | decimal(3,2) | 质量评分(0-5) |
-| delivery_rating | decimal(3,2) | 交期评分(0-5) |
-| service_rating | decimal(3,2) | 服务评分(0-5) |
-| level | int | 按金额等级，字典配置：1-A(>30万),2-B(11-29万),3-C(5-10万),4-D(<4万) |
-| cooperation_level | int | 合作等级：1-战略合作,2-重要合作,3-一般合作,4-临时合作 |
-| payment_method | int | 付款方式: 1-现金支付,2-月结支付 |
-| payment_terms | varchar(200) | 付款条件 |
-| cooperation_start_date | datetime | 合作开始日期 |
-| create_time | datetime | 创建时间 |
-| create_id | bigint | 创建人ID |
-| modify_time | datetime | 修改时间 |
-| modify_id | bigint | 修改人ID |
+**type字段扩展**: 企业类型新增值5-综合供应商(工厂+供应商)
 
 ## 2.2 地域管理
 
@@ -425,20 +416,25 @@
 
 ## 2.3 机构关系管理
 
-### 2.3.1.机构关系表（o_enterprise_relation）
+### 2.3.1.企业关系表（o_enterprise_relation）
 
 | 字段名 | 类型 | 备注说明 |
 | ------ | ---- | -------- |
 | id | bigint | 主键ID |
-| agent_id | bigint | 代理商ID，关联o_enterprise主键，类型为代理商 |
-| enterprise_id | bigint | 企业ID，关联o_enterprise主键，类型为企业 |
-| type | int | 管理映射：1-企业客户，2-代理商，3-供应商，4-工厂 |
+| from_enterprise_id | bigint | 主体企业ID，关联o_enterprise主键 |
+| to_enterprise_id | bigint | 客体企业ID，关联o_enterprise主键 |
+| relation_type | tinyint | 关系类型：1-代理关系，2-供应关系，3-客户关系，4-合作关系，5-上下级关系，6-投资关系，7-竞争关系，8-其他关系 |
 | business_type | int | 业务类型：1-智能织机（服饰生产管理系统），2-其他业务 |
+| status | tinyint | 关系状态：1-正常，2-暂停，3-终止，4-待确认 |
 | description | varchar(256) | 描述和备注信息 |
 | create_time | datetime | 创建时间 |
 | create_id | bigint | 创建人ID |
 | modify_time | datetime | 修改时间 |
 | modify_id | bigint | 修改人ID |
+
+**索引优化**:
+- 唯一索引：uk_relation_pair (from_enterprise_id, to_enterprise_id, relation_type) 防止重复关系
+- 双向查询索引：idx_relation_bidirectional (from_enterprise_id, to_enterprise_id, status)
 
 ## 2.4 企业内部管理
 
