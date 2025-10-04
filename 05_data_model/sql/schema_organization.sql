@@ -6,7 +6,7 @@ CREATE TABLE `o_enterprise` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
   `area_id` bigint DEFAULT NULL COMMENT '地域ID，关联O_area表主键',
-  `agent_id` bigint DEFAULT NULL COMMENT '所属代理商ID',
+  -- `agent_id` bigint DEFAULT NULL COMMENT '所属代理商ID',
   `code` int DEFAULT NULL COMMENT '企业编码，系统生成',
   `img_url` varchar(255) DEFAULT NULL COMMENT '企业机构背景图片',
   `img_logo` varchar(255) DEFAULT NULL COMMENT '企业机构logo图片',
