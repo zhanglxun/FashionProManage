@@ -3,7 +3,7 @@
 
 -- 企业信息表（已合并供应商和工厂扩展字段）
 CREATE TABLE `o_enterprise` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
   `area_id` bigint DEFAULT NULL COMMENT '地域ID，关联O_area表主键',
   -- `agent_id` bigint DEFAULT NULL COMMENT '所属代理商ID',
@@ -63,7 +63,7 @@ CREATE TABLE `o_enterprise` (
 
 -- 企业代理商扩展信息表
 CREATE TABLE `o_enterprise_agent` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
   `parent_id` bigint DEFAULT NULL COMMENT '父级ID，关联o_enterprise_agent主键，平台公司为0',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
@@ -88,7 +88,7 @@ CREATE TABLE `o_enterprise_agent` (
 
 -- 地域信息表
 CREATE TABLE `o_area` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL  COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
   `parent_id` bigint DEFAULT NULL COMMENT '父级ID',
   `name` varchar(11) NOT NULL COMMENT '区域名称',
@@ -107,7 +107,7 @@ CREATE TABLE `o_area` (
 
 -- 企业关系表（优化为双向关系管理）
 CREATE TABLE `o_enterprise_relation` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL  COMMENT '主键ID',
   `from_enterprise_id` bigint NOT NULL COMMENT '关系发起企业ID',
   `to_enterprise_id` bigint NOT NULL COMMENT '关系接收企业ID',
   `relation_type` int NOT NULL COMMENT '关系类型：1-代理关系，2-供应关系，3-客户关系，4-合作关系，5-上下级关系，6-投资关系，7-竞争关系，8-其他关系',
@@ -132,7 +132,7 @@ CREATE TABLE `o_enterprise_relation` (
 
 -- 企业参数定义表
 CREATE TABLE `o_setting` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `sort_id` int DEFAULT NULL COMMENT '排序ID',
   `parent_id` bigint DEFAULT NULL COMMENT '父级主键ID',
   `code` varchar(36) NOT NULL COMMENT '参数项识别码',
@@ -157,7 +157,7 @@ CREATE TABLE `o_setting` (
 
 -- 企业部门信息表
 CREATE TABLE `o_department` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `parent_id` bigint DEFAULT '0' COMMENT '父级主键ID，父级根节点设置为0',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
   `name` varchar(36) NOT NULL COMMENT '部门名称',
@@ -177,7 +177,7 @@ CREATE TABLE `o_department` (
 
 -- 企业员工信息表
 CREATE TABLE `o_staff` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
   `department_id` bigint DEFAULT NULL COMMENT '部门ID，关联o_department主键',
   `user_id` bigint DEFAULT NULL COMMENT '用户ID，关联s_users主键',
@@ -199,7 +199,7 @@ CREATE TABLE `o_staff` (
 
 -- 企业偏好设置表
 CREATE TABLE `o_config` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL COMMENT '主键ID',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
   `setting_id` bigint NOT NULL COMMENT '配置项ID，关联o_setting主键',
   `status` int NOT NULL DEFAULT '1' COMMENT '是否有效：1-开启，0-关闭',
@@ -222,7 +222,7 @@ CREATE TABLE `o_config` (
 
 -- 平台企业的客户信息表
 CREATE TABLE `o_customer` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL  COMMENT '主键ID',
   `enterprise_id` bigint NOT NULL COMMENT '企业ID，关联o_enterprise主键',
   `number` bigint DEFAULT NULL COMMENT '客户编号，自动编号',
   `name` varchar(36) NOT NULL COMMENT '客户名称',
@@ -255,7 +255,7 @@ CREATE TABLE `o_customer` (
 
 -- 客户联系人信息表
 CREATE TABLE `o_contact` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL  COMMENT '主键ID',
   `customer_id` bigint NOT NULL COMMENT '客户ID，关联o_customer主键',
   `name` varchar(32) NOT NULL COMMENT '联系人姓名',
   `contact_type` tinyint DEFAULT NULL COMMENT '联系方式：1-电话，2-邮件，3-社媒账号(whatsapp)，4-telegram',
@@ -273,7 +273,7 @@ CREATE TABLE `o_contact` (
 
 -- 平台供应商/工厂的产品、服务表（兼容合并后的模式）
 CREATE TABLE `o_supplier_product` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint NOT NULL  COMMENT '主键ID',
   `supplier_id` bigint NOT NULL COMMENT '供应商/工厂ID，关联o_enterprise主键',
   `basic_fabric_id` bigint DEFAULT NULL COMMENT '物料档案的ID，关联p_basic_fabric主键',
   `product_name` varchar(255) DEFAULT NULL COMMENT '品名',
